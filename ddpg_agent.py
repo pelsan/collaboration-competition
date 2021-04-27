@@ -18,9 +18,8 @@ TAU = 1e-3              # for soft update of target parameters
 LR_ACTOR = 1e-4         # learning rate of the actor 
 LR_CRITIC = 2e-4        # learning rate of the critic
 WEIGHT_DECAY = 0        # L2 weight decay
+GCLIP_VALUE = 1          # Gradient Clipping by value, Limit to be between -CLIP_VALUE -> +CLIP_VALUE
 
-#PERCENT_GOOD_REWARD= 500
-#MAX_GOOD_REWARD = 1001
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -115,8 +114,8 @@ class Agent():
         # Minimize the loss
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
-        ## grad clip
-        nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
+        ## Gradient Clipping by value
+        nn.utils.clip_grad_norm_(self.critic_local.parameters(), GCLIP_VALUE)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
